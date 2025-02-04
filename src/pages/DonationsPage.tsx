@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Heart, DollarSign, Gift, Clock, PawPrint, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Heart, DollarSign, Gift, Clock, PawPrint, ArrowRight } from 'lucide-react';
 
-type DonationOption = {
+interface DonationOption {
   id: string;
   amount: number;
   description: string;
   impact: string;
-};
+}
 
 const donationOptions: DonationOption[] = [
   {
@@ -113,7 +113,7 @@ export default function DonationsPage() {
                 className={`flex-1 py-3 px-4 rounded-lg border-2 transition ${
                   donationType === 'one-time'
                     ? 'border-blue-600 bg-blue-50 text-blue-600'
-                    : 'border-gray-200 hover:border-blue-600'
+                    : 'border-gray-200 hover:border-blue-600 text-gray-600'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
@@ -127,7 +127,7 @@ export default function DonationsPage() {
                 className={`flex-1 py-3 px-4 rounded-lg border-2 transition ${
                   donationType === 'monthly'
                     ? 'border-blue-600 bg-blue-50 text-blue-600'
-                    : 'border-gray-200 hover:border-blue-600'
+                    : 'border-gray-200 hover:border-blue-600 text-gray-600'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
@@ -176,7 +176,7 @@ export default function DonationsPage() {
                   setCustomAmount(e.target.value);
                   setSelectedAmount(null);
                 }}
-                className="w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-8 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
             </div>
@@ -227,9 +227,9 @@ export default function DonationsPage() {
 
           {/* Submit Button */}
           <button
-            type="button" // Change type to button to prevent default form submission
+            type="button"
             onClick={handleSubmit}
-            className="w-full sm:w-auto bg-blue-600 text-white py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
+            className="w-full sm:w-auto bg-blue-600 text-white py-3 px-8 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300"
           >
             Complete Donation
           </button>

@@ -14,7 +14,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center gap-2">
             <PawPrint className="w-8 h-8 text-blue-600" />
-            <span className="text-xl font-bold"> Pawfinder </span>
+            <span className="text-xl font-bold">Pawfinder</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -58,6 +58,8 @@ export default function Navbar() {
             className="md:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
           >
             {isOpen ? (
               <X className="w-6 h-6 text-gray-600" />
@@ -69,14 +71,17 @@ export default function Navbar() {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 absolute top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-lg">
+          <div
+            id="mobile-menu"
+            className="md:hidden py-4 absolute top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-lg transition-transform transform duration-300 ease-in-out"
+          >
             <div className="container mx-auto px-4">
               <div className="flex flex-col gap-4">
                 <Link
                   to="/"
                   className={`${
                     isActive('/') ? 'text-blue-600' : 'text-gray-600'
-                  } hover:text-blue-600 transition px-2 py-1 rounded-md`}
+                  } hover:text-blue-600 transition px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   onClick={() => setIsOpen(false)}
                 >
                   Home
@@ -85,7 +90,7 @@ export default function Navbar() {
                   to="/dogs"
                   className={`${
                     isActive('/dogs') ? 'text-blue-600' : 'text-gray-600'
-                  } hover:text-blue-600 transition px-2 py-1 rounded-md`}
+                  } hover:text-blue-600 transition px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   onClick={() => setIsOpen(false)}
                 >
                   Find a Dog
@@ -94,7 +99,7 @@ export default function Navbar() {
                   to="/report"
                   className={`${
                     isActive('/report') ? 'text-blue-600' : 'text-gray-600'
-                  } hover:text-blue-600 transition px-2 py-1 rounded-md`}
+                  } hover:text-blue-600 transition px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   onClick={() => setIsOpen(false)}
                 >
                   Report Sighting
@@ -103,7 +108,7 @@ export default function Navbar() {
                   to="/donate"
                   className={`${
                     isActive('/donate') ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'
-                  } px-4 py-2 rounded-full hover:bg-blue-600 hover:text-white transition text-center mb-2`}
+                  } px-4 py-2 rounded-full hover:bg-blue-600 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   onClick={() => setIsOpen(false)}
                 >
                   Donate

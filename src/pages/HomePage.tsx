@@ -9,6 +9,7 @@ type DogCard = {
   location: string;
   image: string;
   description: string;
+  size: string; // Added size to the DogCard type
 };
 
 const dogs: DogCard[] = [
@@ -18,7 +19,8 @@ const dogs: DogCard[] = [
     age: 'adult',
     location: 'Downtown Shelter',
     image: 'https://i.postimg.cc/6qzHmJ5K/max-paw-finder.jpg',
-    description: 'Friendly and energetic dog looking for a loving home.'
+    description: 'Friendly and energetic dog looking for a loving home.',
+    size: 'medium', // Added size information
   },
   {
     id: '2',
@@ -26,7 +28,8 @@ const dogs: DogCard[] = [
     age: 'puppy',
     location: 'East Side Rescue',
     image: 'https://i.postimg.cc/hPS6bMPg/luna-paw-finder.jpg',
-    description: 'Sweet and gentle soul, great with kids.'
+    description: 'Sweet and gentle soul, great with kids.',
+    size: 'small', // Added size information
   },
   {
     id: '3',
@@ -34,20 +37,24 @@ const dogs: DogCard[] = [
     age: 'adult',
     location: 'West Park Shelter',
     image: 'https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&q=80&w=800',
-    description: 'Playful and loving dog seeking forever family.'
+    description: 'Playful and loving dog seeking forever family.',
+    size: 'large', // Added size information
   }
 ];
 
 export default function HomePage() {
-  const [filters, setFilters] = useState({ age: '', searchQuery: '' });
+  const [filters, setFilters] = useState({ age: '', searchQuery: '', size: '', location: '' });
 
   const filteredDogs = dogs.filter((dog) => {
     const ageMatch = filters.age === '' || dog.age === filters.age;
+    const sizeMatch = filters.size === '' || dog.size === filters.size;
+    const locationMatch = filters.location === '' || dog.location.toLowerCase().includes(filters.location.toLowerCase());
+    const searchQuery = filters.searchQuery.toLowerCase();
     const searchMatch = filters.searchQuery === '' || 
-      dog.name.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
-      dog.location.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
-      dog.description.toLowerCase().includes(filters.searchQuery.toLowerCase());
-    return ageMatch && searchMatch;
+      dog.name.toLowerCase().includes(searchQuery) ||
+      dog.location.toLowerCase().includes(searchQuery) ||
+      dog.description.toLowerCase().includes(searchQuery);
+    return ageMatch && sizeMatch && locationMatch && searchMatch;
   });
 
   return (
@@ -62,11 +69,11 @@ export default function HomePage() {
             {/* Search Bar */}
             <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-2 flex">
               <div className="flex-1 flex items-center px-4">
-                <Search className="w-5 h-5 text-gray-400" />
+                <Search className="w-5 h-5 text-gray-500" /> {/* Changed to a visible color */}
                 <input
                   type="text"
                   placeholder="Search for dogs..."
-                  className="w-full px-4 py-2 focus:outline-none"
+                  className="w-full px-4 py-2 focus:outline-none text-gray-900" // Added text-gray-900 for visibility
                   value={filters.searchQuery}
                   onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
                 />
@@ -89,18 +96,35 @@ export default function HomePage() {
               value={filters.age}
               onChange={(e) => setFilters({ ...filters, age: e.target.value })}
               className="w-full sm:w-auto px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              aria-label="Filter by age"
             >
               <option value="">Age</option>
               <option value="puppy">Puppy (&lt; 1 year)</option>
               <option value="adult">Adult (1-7 years)</option>
               <option value="senior">Senior (&gt; 7 years)</option>
             </select>
-            <button className="px-4 py-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition">
-              Location
-            </button>
-            <button className="px-4 py-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition">
-              Size
-            </button>
+            <select
+              value={filters.location}
+              onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+              className="w-full sm:w-auto px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              aria-label="Filter by location"
+            >
+              <option value="">Location</option>
+              <option value="downtown shelter">Downtown Shelter</option>
+              <option value="east side rescue">East Side Rescue</option>
+              <option value="west park shelter">West Park Shelter</option>
+            </select>
+            <select
+              value={filters.size}
+              onChange={(e) => setFilters({ ...filters, size: e.target.value })}
+              className="w-full sm:w-auto px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              aria-label="Filter by size"
+            >
+              <option value="">Size</option>
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+              <option value="large">Large</option>
+            </select>
           </div>
         </div>
 
@@ -116,7 +140,7 @@ export default function HomePage() {
               <div className="p-6">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-xl font-semibold">{dog.name}</h3>
-                  <button className="text-red-500 hover:text-red-600">
+                  <button className="text-red-500 hover:text-red-600" aria-label={`Favorite ${dog.name}`}>
                     <Heart className="w-6 h-6" />
                   </button>
                 </div>
@@ -127,10 +151,14 @@ export default function HomePage() {
                 <div className="text-gray-600 mb-4">
                   <span className="font-medium">Age:</span> {dog.age}
                 </div>
+                <div className="text-gray-600 mb-4">
+                  <span className="font-medium">Size:</span> {dog.size}
+                </div>
                 <p className="text-gray-700 mb-4">{dog.description}</p>
                 <Link
                   to={`/dog/${dog.id}`}
                   className="block w-full bg-blue-600 text-white py-2 text-center rounded-md hover:bg-blue-700 transition"
+                  aria-label={`Learn more about ${dog.name}`}
                 >
                   Learn More
                 </Link>

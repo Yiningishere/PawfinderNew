@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { PawPrint, Phone, Mail } from 'lucide-react';
+import { PawPrint, Phone, Mail, ArrowRight } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -19,12 +19,12 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <div className="space-y-2">
-              <a href="tel:+1234567890" className="flex items-center gap-2 text-gray-400 hover:text-white transition">
-                <Phone className="w-5 h-5" />
+              <a href="tel:+1234567890" className="flex items-center gap-2 text-gray-400 hover:text-white transition" aria-label="Call us">
+                <Phone className="w-6 h-6" />
                 <span>(123) 456-7890</span>
               </a>
-              <a href="mailto:help@straydogs.com" className="flex items-center gap-2 text-gray-400 hover:text-white transition">
-                <Mail className="w-5 h-5" />
+              <a href="mailto:help@straydogs.com" className="flex items-center gap-2 text-gray-400 hover:text-white transition" aria-label="Email us">
+                <Mail className="w-6 h-6" />
                 <span>help@straydogs.com</span>
               </a>
             </div>
@@ -33,9 +33,18 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <div className="space-y-2">
-              <Link to="/about" className="block text-gray-400 hover:text-white transition">About</Link>
-              <Link to="/privacy" className="block text-gray-400 hover:text-white transition">Privacy Policy</Link>
-              <Link to="/terms" className="block text-gray-400 hover:text-white transition">Terms of Service</Link>
+              <Link to="/about" className="flex items-center gap-2 text-gray-400 hover:text-white transition" aria-label="Learn more about us">
+                <ArrowRight className="w-6 h-6" />
+                <span>About</span>
+              </Link>
+              <Link to="/privacy" className="flex items-center gap-2 text-gray-400 hover:text-white transition" aria-label="View our privacy policy">
+                <ArrowRight className="w-6 h-6" />
+                <span>Privacy Policy</span>
+              </Link>
+              <Link to="/terms" className="flex items-center gap-2 text-gray-400 hover:text-white transition" aria-label="View our terms of service">
+                <ArrowRight className="w-6 h-6" />
+                <span>Terms of Service</span>
+              </Link>
             </div>
           </div>
         </div>

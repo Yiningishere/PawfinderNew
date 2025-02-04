@@ -1,9 +1,25 @@
 import React, { useState } from 'react';
 import { Camera, MapPin, Calendar, AlertTriangle } from 'lucide-react';
 
+interface FormData {
+  streetAddress: string;
+  city: string;
+  dateSeen: string;
+  timeSeen: string;
+  appearance: string;
+  behavior: string;
+  name: string;
+  phoneNumber: string;
+}
+
+interface UploadedFilesResponse {
+  message: string;
+  files: string[];
+}
+
 export default function ReportPage() {
   const [images, setImages] = useState<FileList | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     streetAddress: '',
     city: '',
     dateSeen: '',
@@ -13,9 +29,23 @@ export default function ReportPage() {
     name: '',
     phoneNumber: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setSuccessMessage('');
+    setErrorMessage('');
+
+    // Basic validation
+    if (!formData.streetAddress || !formData.city || !formData.dateSeen || !formData.timeSeen || !formData.appearance || !formData.behavior) {
+      setErrorMessage('Please fill out all required fields.');
+      setLoading(false);
+      return;
+    }
 
     const formDataToSend = new FormData();
     formDataToSend.append('streetAddress', formData.streetAddress);
@@ -34,13 +64,16 @@ export default function ReportPage() {
     }
 
     try {
-      const response = await fetch('/api/report-stray-dog', {
+      const response = await fetch('http://localhost:3000/api/report-stray-dog', {
         method: 'POST',
         body: formDataToSend
       });
 
+      const data: UploadedFilesResponse = await response.json();
+
       if (response.ok) {
-        alert('Thank you for your report!');
+        setSuccessMessage(data.message);
+        setUploadedImages(data.files);
         // Optionally, reset the form
         setFormData({
           streetAddress: '',
@@ -54,11 +87,13 @@ export default function ReportPage() {
         });
         setImages(null);
       } else {
-        alert('There was an error submitting your report. Please try again.');
+        setErrorMessage(data.message);
       }
     } catch (error) {
       console.error('Error submitting report:', error);
-      alert('There was an error submitting your report. Please try again.');
+      setErrorMessage('There was an error submitting your report. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,6 +128,34 @@ export default function ReportPage() {
           </div>
         </div>
 
+        {successMessage && (
+          <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-8">
+            <div className="flex items-start">
+              <AlertTriangle className="w-5 h-5 text-green-400 mr-3 mt-0.5" />
+              <div>
+                <h3 className="text-sm font-medium text-green-800">Success</h3>
+                <p className="mt-1 text-sm text-green-700">
+                  {successMessage}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-8">
+            <div className="flex items-start">
+              <AlertTriangle className="w-5 h-5 text-red-400 mr-3 mt-0.5" />
+              <div>
+                <h3 className="text-sm font-medium text-red-800">Error</h3>
+                <p className="mt-1 text-sm text-red-700">
+                  {errorMessage}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-lg shadow-md p-6">
           {/* Location Section */}
           <div>
@@ -102,7 +165,7 @@ export default function ReportPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="streetAddress" className="block text-sm font-medium text-gray-700 mb-1">
                   Street Address
                 </label>
                 <input
@@ -110,12 +173,14 @@ export default function ReportPage() {
                   className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter street address"
                   name="streetAddress"
+                  id="streetAddress"
                   value={formData.streetAddress}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
                   City
                 </label>
                 <input
@@ -123,8 +188,10 @@ export default function ReportPage() {
                   className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter city"
                   name="city"
+                  id="city"
                   value={formData.city}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -138,27 +205,31 @@ export default function ReportPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="dateSeen" className="block text-sm font-medium text-gray-700 mb-1">
                   Date Seen
                 </label>
                 <input
                   type="date"
                   className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   name="dateSeen"
+                  id="dateSeen"
                   value={formData.dateSeen}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="timeSeen" className="block text-sm font-medium text-gray-700 mb-1">
                   Time Seen
                 </label>
                 <input
                   type="time"
                   className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   name="timeSeen"
+                  id="timeSeen"
                   value={formData.timeSeen}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -169,7 +240,7 @@ export default function ReportPage() {
             <h2 className="text-xl font-semibold mb-4">Dog Description</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="appearance" className="block text-sm font-medium text-gray-700 mb-1">
                   Appearance
                 </label>
                 <textarea
@@ -177,12 +248,14 @@ export default function ReportPage() {
                   rows={3}
                   placeholder="Describe the dog's size, color, breed (if known), and any distinctive features"
                   name="appearance"
+                  id="appearance"
                   value={formData.appearance}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="behavior" className="block text-sm font-medium text-gray-700 mb-1">
                   Behavior
                 </label>
                 <textarea
@@ -190,8 +263,10 @@ export default function ReportPage() {
                   rows={3}
                   placeholder="Describe the dog's behavior (friendly, scared, aggressive, etc.)"
                   name="behavior"
+                  id="behavior"
                   value={formData.behavior}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -227,6 +302,21 @@ export default function ReportPage() {
                 </div>
               )}
             </div>
+            {uploadedImages.length > 0 && (
+              <div className="mt-4 space-y-4">
+                <h3 className="text-lg font-semibold">Uploaded Photos</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {uploadedImages.map((imageUrl, index) => (
+                    <img
+                      key={index}
+                      src={imageUrl}
+                      alt={`Uploaded ${index}`}
+                      className="w-full h-48 object-cover rounded-lg shadow-md"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Contact Information */}
@@ -234,7 +324,7 @@ export default function ReportPage() {
             <h2 className="text-xl font-semibold mb-4">Your Contact Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                   Name
                 </label>
                 <input
@@ -242,12 +332,14 @@ export default function ReportPage() {
                   className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Your name"
                   name="name"
+                  id="name"
                   value={formData.name}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
                   Phone Number
                 </label>
                 <input
@@ -255,18 +347,23 @@ export default function ReportPage() {
                   className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Your phone number"
                   name="phoneNumber"
+                  id="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
           </div>
 
+          {/* Submit Button */}
           <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+            type="button" // Use type="button" to prevent default form submission
+            onClick={handleSubmit}
+            className="w-full sm:w-auto bg-blue-600 text-white py-3 px-8 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300"
+            disabled={loading}
           >
-            Submit Report
+            {loading ? 'Submitting...' : 'Submit Report'}
           </button>
         </form>
       </div>
